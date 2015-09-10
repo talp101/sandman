@@ -87,7 +87,7 @@ def _single_resource_json_response(resource, depth=0):
     response.headers['Link'] = ''
     for link in links:
         response.headers['Link'] += '<{}>; rel="{}",'.format(link['uri'], link['rel'])
-    response.headers['Link'] = response.headers['Link'][:-1] 
+    response.headers['Link'] = response.headers['Link'][:-1]
     return response
 
 def _single_attribute_html_response(resource, name, value):
@@ -326,16 +326,16 @@ def update_resource(resource, incoming_request):
     return no_content_response()
 
 
-@app.route('/<collection>/<key>', methods=['PATCH'])
+@app.route('/api/v1/legacy-api/<collection>/<key>', methods=['PATCH'])
 def patch_resource(collection, key):
     """"Upsert" a resource identified by the given key and return the
     appropriate *Response*.
 
-    If no resource currently exists at `/<collection>/<key>`, create it
+    If no resource currently exists at `/api/v1/legacy-api/<collection>/<key>`, create it
     with *key* as its primary key and return a
     :func:`resource_created_response`.
 
-    If a resource *does* exist at `/<collection>/<key>`, update it with
+    If a resource *does* exist at `/api/v1/legacy-api/<collection>/<key>`, update it with
     the data sent in the request and return a :func:`no_content_response`.
 
     Note: HTTP `PATCH` (and, thus, :func:`patch_resource`) is idempotent
@@ -363,7 +363,7 @@ def patch_resource(collection, key):
     else:
         return update_resource(resource, request)
 
-@app.route('/<collection>/<key>', methods=['PUT'])
+@app.route('/api/v1/legacy-api/<collection>/<key>', methods=['PUT'])
 def put_resource(collection, key):
     """Replace the resource identified by the given key and return the
     appropriate response.
@@ -384,7 +384,7 @@ def put_resource(collection, key):
             exception))
     return no_content_response()
 
-@app.route('/<collection>', methods=['POST'])
+@app.route('/api/v1/legacy-api/<collection>', methods=['POST'])
 def post_resource(collection):
     """Return the appropriate *Response* based on adding a new resource to
     *collection*.
@@ -402,7 +402,7 @@ def post_resource(collection):
     _perform_database_action('add', resource)
     return resource_created_response(resource)
 
-@app.route('/<collection>/<key>', methods=['DELETE'])
+@app.route('/api/v1/legacy-api/<collection>/<key>', methods=['DELETE'])
 def delete_resource(collection, key):
     """Return the appropriate *Response* for deleting an existing resource in
     *collection*.
@@ -425,7 +425,7 @@ def delete_resource(collection, key):
             exception))
     return no_content_response()
 
-@app.route('/<collection>/<key>', methods=['GET'])
+@app.route('/api/v1/legacy-api/<collection>/<key>', methods=['GET'])
 def get_resource(collection, key):
     """Return the appropriate *Response* for retrieving a single resource.
 
@@ -439,7 +439,7 @@ def get_resource(collection, key):
 
     return resource_response(resource)
 
-@app.route('/<collection>/<key>/<attribute>', methods=['GET'])
+@app.route('/api/v1/legacy-api/<collection>/<key>/<attribute>', methods=['GET'])
 def get_resource_attribute(collection, key, attribute):
     """Return the appropriate *Response* for retrieving an attribute of
     a single resource.
@@ -458,7 +458,7 @@ def get_resource_attribute(collection, key, attribute):
         return attribute_response(resource, attribute, value)
 
 
-@app.route('/<collection>', methods=['GET'])
+@app.route('/api/v1/legacy-api/<collection>', methods=['GET'])
 def get_collection(collection):
     """Return the appropriate *Response* for retrieving a collection of
     resources.
@@ -482,7 +482,7 @@ def get_collection(collection):
         start, stop = page * results_per_page, (page +1) * results_per_page
     return collection_response(resources, start, stop)
 
-@app.route('/', methods=['GET'])
+@app.route('/api/v1/legacy-api/', methods=['GET'])
 def index():
     """Return information about each type of resource and how it can be
     accessed."""
@@ -500,7 +500,7 @@ def index():
     else:
         return render_template('index.html', classes=classes)
 
-@app.route('/<collection>/meta', methods=['GET'])
+@app.route('/api/v1/legacy-api/<collection>/meta', methods=['GET'])
 def get_meta(collection):
     cls = endpoint_class(collection)
     description = cls.meta()
