@@ -87,7 +87,7 @@ class Model(object):
         links.append({'rel': 'self', 'uri': self.resource_uri()})
         return links
 
-    def as_dict(self, depth=0):
+    def as_dict(self, depth=0, cols_to_remove=None):
         """Return a dictionary containing only the attributes which map to
         an instance's database columns.
 
@@ -95,6 +95,8 @@ class Model(object):
 
         """
         result_dict = {}
+        if cols_to_remove is not None:
+            self.__table__.columns = {k:v for k,v in dict(self.__table__.columns).iteritems() if k not in cols_to_remove}
         for column in self.__table__.columns.keys():
             result_dict[column] = getattr(self, column, None)
             if isinstance(result_dict[column], Decimal):
